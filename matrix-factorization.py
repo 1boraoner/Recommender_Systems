@@ -84,7 +84,7 @@ model.apply(model.init_weights)
 optimizer = torch.optim.Adam(params=model.parameters(), lr=0.02, weight_decay=1e-5)
 loss_function = L2Loss
 
-hist = train_model(model, train_dl, test_dl, loss_function, optimizer, 10)
+hist = train_model(model, train_dl, test_dl, loss_function, optimizer, 20)
 
 
 
@@ -93,5 +93,5 @@ print(model(torch.tensor([0]),torch.tensor([167])))
 print(model(torch.tensor([0]),torch.tensor([4])))
 
 
-#plt.plot(np.arange(0,20), hist)
-#plt.show()
+plt.plot(np.arange(0,20), hist)
+plt.show()
