@@ -59,7 +59,7 @@ def train_model(model, num_epochs, train_dl, test_dl, optimizer, loss_function):
     for i in range(num_epochs):
         epoch_history = []
         epoch_loss = 0
-        i = 0
+
         for idx, data in enumerate(train_dl):
 
             optimizer.zero_grad()
