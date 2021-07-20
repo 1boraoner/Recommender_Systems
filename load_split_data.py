@@ -64,20 +64,3 @@ def split_and_load_data(split_mode="seq-aware", feed_back="explicit", test_ratio
 
     return 943, 1682, train_dl, test_dl
 
-
-# from collections import Counter
-# data = read_data_ml100k()
-# print(data["item_id"].nunique(), data["user_id"].nunique())
-# print(Counter(data["item_id"]))
-#
-# i = 0
-# for key,val in Counter(data["item_id"]).items():
-#     if val == 1:
-#         i+=1
-#         print(key,val)
-# print(i)
-#
-# train_d, test_d = train_test_split(data, "seq-aware")
-# print(train_d["item_id"].nunique(), train_d["user_id"].nunique())
-#
-#train_user, train_movies, train_scores, _ = load_data(train_d, train_d["item_id"].nunique())
