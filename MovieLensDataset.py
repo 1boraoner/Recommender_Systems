@@ -20,7 +20,7 @@ class MovieLensDataset(Dataset):
                 encoded_movies[row, self.datas[row, 1].long()] = 1
                 recommended[row, 0] = 1 if self.datas[row, 2] >= 3 else 0
 
-            self.datas = torch.cat((encoded_users, encoded_movies,recommended), dim=1, device=device)
+            self.datas = torch.cat((encoded_users, encoded_movies,recommended), dim=1)
 
     def __len__(self):
         return self.length

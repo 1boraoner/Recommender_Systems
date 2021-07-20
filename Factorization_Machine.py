@@ -6,9 +6,10 @@ import load_split_data as lsd
 
 class Factorization_Machine(Module):
 
-    def __init__(self, field_dims, fact_num):
+    def __init__(self, field_dims, fact_num, device):
 
         super(Factorization_Machine, self).__init__()
+        self.device = device
         self.field_dims = field_dims
         num_inputs = int(sum(field_dims))
 
@@ -32,7 +33,7 @@ class Factorization_Machine(Module):
 
     def init_weights(self,m):
       if m == Embedding or m == Linear:
-        torch.nn.init.normal_(m.weight, mean=0.0, std=1.0)
+        torch.nn.init.normal_xavier_(m.weight)
 
 
 def sigmoid(x):
@@ -80,11 +81,12 @@ def train_model(model, num_epochs, train_dl, test_dl, optimizer, loss_function):
 
     return model_loss_history
 
-device = torch.device("cuda:0") if torch.cuda.is_available else torch.device("cpu")
+device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
 
-a, b, train_dl, test_dl = lsd.split_and_load_data(batch_size=2048,encoded=True)
-FM = Factorization_Machine([943, 1682], fact_num=20)
+a, b, train_dl, test_dl = lsd.split_and_load_data(batch_size=2048,encoded=True, device=device)
+FM = Factorization_Machine([943, 1682], fact_num=20, device=device)
+FM.to(device)
 FM.apply(FM.init_weights)
 optimizer = torch.optim.Adam(lr=0.02, params=FM.parameters(), weight_decay=1e-5)
 
