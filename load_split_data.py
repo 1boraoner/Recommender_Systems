@@ -48,19 +48,19 @@ def load_data(data, movie_num, feed_back="explicit"):
     return users, items, scores, inter
 
 
-def split_and_load_data(split_mode="seq-aware", feed_back="explicit", test_ratio=0.1, batch_size=256):
+def split_and_load_data(device, split_mode="seq-aware", feed_back="explicit", test_ratio=0.1, batch_size=256,
+                        encoded=False):
     data = read_data_ml100k()
     train_d, test_d = train_test_split(data, split_mode=split_mode, test_ratio=test_ratio)
 
     train_user, train_movies, train_scores, _ = load_data(train_d, 1682, feed_back)
     test_user, test_movies, test_scores, _ = load_data(test_d, 1682, feed_back)
 
-    train_set = mld.MovieLensDataset(train_user, train_movies, train_scores)
-    test_set = mld.MovieLensDataset(test_user, test_movies, test_scores)
+    train_set = mld.MovieLensDataset(train_user, train_movies, train_scores, ohencoded=encoded, device=device)
+    test_set = mld.MovieLensDataset(test_user, test_movies, test_scores, device=device, ohencoded=encoded)
 
     train_dl = DataLoader(train_set, batch_size=batch_size, shuffle=False, drop_last=False)
 
     test_dl = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
     return 943, 1682, train_dl, test_dl
-

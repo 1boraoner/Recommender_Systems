@@ -1,5 +1,5 @@
 import torch
-from torch.nn import Module, Embedding, Linear, MSELoss, CrossEntropyLoss
+from torch.nn import Module, Embedding, Linear, MSELoss, CrossEntropyLoss,BCEWithLogitsLoss
 import pandas as pd
 import load_split_data as lsd
 
@@ -7,51 +7,45 @@ import load_split_data as lsd
 class Factorization_Machine(Module):
 
     def __init__(self, field_dims, fact_num):
+
         super(Factorization_Machine, self).__init__()
         self.field_dims = field_dims
         num_inputs = int(sum(field_dims))
+
         self.embedding = Embedding(num_inputs, fact_num)
-        self.fc = Embedding(num_inputs, 1)
+        #self.fc = Embedding(num_inputs, 1)
         self.linear_layer = Linear(in_features=num_inputs, out_features=1, bias=True)
 
     def forward(self, x):
-        encoded_tensor, recommended = OneHotEncoder(x.long(), self.field_dims)
 
-        square_of_sum = torch.pow(self.embedding(encoded_tensor.long()).sum(axis=1), 2)
-        sum_of_square = torch.pow(self.embedding(encoded_tensor.long()), 2).sum(axis=1)
-        interaction_dif = 0.5 * (square_of_sum - sum_of_square).sum(axis=1)
-        l = self.linear_layer(encoded_tensor)
-        out = l + interaction_dif.unsqueeze(dim=1)
-        out = torch.sigmoid(out)
+        gen_out = self.embedding(x.long())
 
-        return out, recommended
+        square_of_sum = (gen_out.sum(1))**2
+        sum_of_square = (gen_out**2).sum(1)
 
+        inter = 0.5 * (square_of_sum - sum_of_square).sum(1, keepdim=True)
+        lin = self.linear_layer(x)
+        out = lin + inter
 
-def OneHotEncoder(original, num_feats):
-    encoded_users = torch.zeros(size=(original.shape[0], num_feats[0]))
-    encoded_movies = torch.zeros(size=(original.shape[0], num_feats[1]))
+        out = sigmoid(out)
+        return out.squeeze(dim=1)
 
-    recommended = torch.zeros(size=(original.shape[0], 1))
-
-    for row in range(original.shape[0]):
-        encoded_users[row, original[row, 0].long()] = 1
-        encoded_movies[row, original[row, 1].long()] = 1
-        recommended[row, 0] = 1 if original[row, 2] >= 3 else 0
-
-    encoded_tensor = torch.cat((encoded_users, encoded_movies), dim=1)
-    return encoded_tensor, recommended
+    def init_weights(self,m):
+      if m == Embedding or m == Linear:
+        torch.nn.init.normal_(m.weight, mean=0.0, std=1.0)
 
 
-def L2Loss(r_hat, r_true):
-    return 0.5 * torch.sum((r_hat - r_true) ** 2)
-
+def sigmoid(x):
+    return 1 / (1 + torch.exp(-x))
 
 def evaluator(model, test_loader):
-    mse = MSELoss()
+    mse = BCEWithLogitsLoss()
     loss_record = []
     for data in test_loader:
-        model_preds, true_recommend = model(data.long())
-        loss = torch.sqrt(mse(model_preds, true_recommend))
+        model_preds = model(data[:, :-1])
+        batch_loss = loss_function(model_preds.float(), data[:, -1].float())
+
+        loss = torch.sqrt(mse(model_preds, data[:, -1]))
         loss_record.append(loss)
 
     mean_loss = torch.tensor(loss_record).mean().to(torch.float64)
@@ -66,14 +60,13 @@ def train_model(model, num_epochs, train_dl, test_dl, optimizer, loss_function):
         epoch_loss = 0
         i = 0
         for idx, data in enumerate(train_dl):
-            print(i)
-            i += 1
 
-            model_preds, true_recommend = model(data.long())
-            batch_loss = sum(0.5 * (model_preds - true_recommend) ** 2) / 2048
+            optimizer.zero_grad()
+
+            model_preds = model(data[:, :-1])
+            batch_loss = loss_function(model_preds.float(), data[:,-1].float())
 
             epoch_loss += batch_loss
-            optimizer.zero_grad()
             batch_loss.backward()
             optimizer.step()
 
@@ -87,19 +80,36 @@ def train_model(model, num_epochs, train_dl, test_dl, optimizer, loss_function):
 
     return model_loss_history
 
+device = torch.device("cuda:0") if torch.cuda.is_available else torch.device("cpu")
 
-# a, b, train_dl, test_dl = lsd.split_and_load_data(batch_size=2048)
-# FM = Factorization_Machine([943, 1682], fact_num=20)
-# optimizer = torch.optim.Adam(lr=0.02, params=FM.parameters(), weight_decay=1e-5)
+
+a, b, train_dl, test_dl = lsd.split_and_load_data(batch_size=2048,encoded=True)
+FM = Factorization_Machine([943, 1682], fact_num=20)
+FM.apply(FM.init_weights)
+optimizer = torch.optim.Adam(lr=0.02, params=FM.parameters(), weight_decay=1e-5)
+
+num_epochs = 1
+
+loss_function = BCEWithLogitsLoss()
+hist = train_model(FM, num_epochs, train_dl, test_dl, optimizer, loss_function)
+
+
+
+
+# def OneHotEncoder(original, num_feats):
+#     encoded_users = torch.zeros(size=(original.shape[0], num_feats[0]))
+#     encoded_movies = torch.zeros(size=(original.shape[0], num_feats[1]))
 #
-# num_epochs = 10
+#     recommended = torch.zeros(size=(original.shape[0], 1))
 #
-# loss_function = L2Loss
-# hist = train_model(FM, num_epochs, train_dl, test_dl, optimizer, loss_function)
+#     for row in range(original.shape[0]):
+#         encoded_users[row, original[row, 0].long()] = 1
+#         encoded_movies[row, original[row, 1].long()] = 1
+#         recommended[row, 0] = 1 if original[row, 2] >= 3 else 0
+#
+#     encoded_tensor = torch.cat((encoded_users, encoded_movies), dim=1)
+#     return encoded_tensor, recommended
 
-x = torch.rand(3,1, dtype=torch.long)
-y = torch.rand(3,1, dtype=torch.long)
 
-f = CrossEntropyLoss()
-
-print(f(x,y))
+# def L2Loss(r_hat, r_true):
+    # return 0.5 * torch.sum((r_hat - r_true) ** 2)
