@@ -11,7 +11,7 @@ class MovieLensDataset(Dataset):
         self.length = self.datas.shape[0]
 
         if ohencoded:
-            encoded_users = torch.zeros(size=(self.datas.shape[0], 943),device = device)
+            encoded_users = torch.zeros(size=(self.datas.shape[0], 943), device = device)
             encoded_movies = torch.zeros(size=(self.datas.shape[0], 1682),device = device)
             recommended = torch.zeros(size=(self.datas.shape[0], 1),device = device)
 
@@ -28,4 +28,3 @@ class MovieLensDataset(Dataset):
     def __getitem__(self, idx):
 
         return self.datas[idx]
-
