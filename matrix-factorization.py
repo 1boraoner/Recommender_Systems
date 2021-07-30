@@ -4,6 +4,7 @@ from load_split_data import split_and_load_data
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # model implementation
 
 class MatrixFactorization(torch.nn.Module):
@@ -23,9 +24,10 @@ class MatrixFactorization(torch.nn.Module):
         Rm = (Pm * Qm).sum(axis=1) + bu.squeeze() + bi.squeeze()
         return Rm.flatten()
 
-    def init_weights(self,m):
+    def init_weights(self, m):
         if m == Embedding:
             torch.nn.init.normal_(m.weight, mean=0, std=0.01)
+
 
 def L2Loss(r_hat, r_true):
     return 0.5 * torch.sum((r_hat - r_true) ** 2)
@@ -57,10 +59,10 @@ def train_model(model, train_dl, test_dl, loss_function, optimizer, num_epochs):
         epoch_loss = 0
 
         for idx, data in enumerate(train_dl):
-
             model_preds = model(data[:, 0].long(), data[:, 1].long())
-            batch_loss = sum(0.5*(model_preds - data[:, 2].float()) ** 2)/512
-
+            batch_loss = sum(0.5 * (model_preds - data[:, 2].float()) ** 2) / 512
+            print(model_preds)
+            break
             epoch_loss += batch_loss
             optimizer.zero_grad()
             batch_loss.backward()
@@ -70,7 +72,7 @@ def train_model(model, train_dl, test_dl, loss_function, optimizer, num_epochs):
         epoch_history.append(epoch_loss)
         test_rmse = evaluator(model, test_dl)
 
-        model_loss_history.append((epoch_loss,test_rmse))
+        model_loss_history.append((epoch_loss, test_rmse))
 
         print(f" {epoch}th epoch loss: {epoch_loss}, test_set loss: {test_rmse}")
 
@@ -85,14 +87,11 @@ model.apply(model.init_weights)
 optimizer = torch.optim.Adam(params=model.parameters(), lr=0.02, weight_decay=1e-5)
 loss_function = L2Loss
 
-hist = train_model(model, train_dl, test_dl, loss_function, optimizer, 1) #20
+hist = train_model(model, train_dl, test_dl, loss_function, optimizer, 1)  # 20
 
+print(model(torch.tensor([20]), torch.tensor([30])))
+print(model(torch.tensor([0]), torch.tensor([167])))
+print(model(torch.tensor([0]), torch.tensor([4])))
 
-
-print(model(torch.tensor([20]),torch.tensor([30])))
-print(model(torch.tensor([0]),torch.tensor([167])))
-print(model(torch.tensor([0]),torch.tensor([4])))
-
-
-plt.plot(np.arange(0,20), hist)
+plt.plot(np.arange(0, 20), hist)
 plt.show()

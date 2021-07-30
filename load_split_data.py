@@ -56,7 +56,7 @@ def split_and_load_data(device, split_mode="seq-aware", feed_back="explicit", te
     train_user, train_movies, train_scores, _ = load_data(train_d, 1682, feed_back)
     test_user, test_movies, test_scores, _ = load_data(test_d, 1682, feed_back)
 
-    train_set = mld.MovieLensDataset(train_user, train_movies, train_scores, ohencoded=encoded, device=device)
+    train_set = mld.MovieLensDataset(train_user, train_movies, train_scores, device=device, ohencoded=encoded)
     test_set = mld.MovieLensDataset(test_user, test_movies, test_scores, device=device, ohencoded=encoded)
 
     train_dl = DataLoader(train_set, batch_size=batch_size, shuffle=False, drop_last=False)
