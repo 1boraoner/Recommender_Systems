@@ -61,8 +61,7 @@ def train_model(model, train_dl, test_dl, loss_function, optimizer, num_epochs):
         for idx, data in enumerate(train_dl):
             model_preds = model(data[:, 0].long(), data[:, 1].long())
             batch_loss = sum(0.5 * (model_preds - data[:, 2].float()) ** 2) / 512
-            print(model_preds)
-            break
+
             epoch_loss += batch_loss
             optimizer.zero_grad()
             batch_loss.backward()
@@ -80,18 +79,20 @@ def train_model(model, train_dl, test_dl, loss_function, optimizer, num_epochs):
 
 
 device = "gpu" if torch.cuda.is_available() else "cpu"
-num_users, num_items, train_dl, test_dl = split_and_load_data(device=device, test_ratio=0.1, batch_size=512)
+num_users, num_items, train_dl, test_dl = split_and_load_data(device=device, test_ratio=0.1, batch_size=512, encoded=False)
 model = MatrixFactorization(30, num_users, num_items)
 model.to(device)
 model.apply(model.init_weights)
 optimizer = torch.optim.Adam(params=model.parameters(), lr=0.02, weight_decay=1e-5)
 loss_function = L2Loss
 
-hist = train_model(model, train_dl, test_dl, loss_function, optimizer, 1)  # 20
-
+num_epoch = 20
+hist = train_model(model, train_dl, test_dl, loss_function, optimizer, num_epoch)  # 20
+#
 print(model(torch.tensor([20]), torch.tensor([30])))
 print(model(torch.tensor([0]), torch.tensor([167])))
 print(model(torch.tensor([0]), torch.tensor([4])))
-
-plt.plot(np.arange(0, 20), hist)
+#
+plt.plot(np.arange(0, num_epoch), hist)
 plt.show()
+
