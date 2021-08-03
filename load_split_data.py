@@ -42,7 +42,7 @@ def load_data(data, movie_num, feed_back="explicit"):
     if feed_back == "explicit":
         pass
         #for uid, iid, rate in zip(users, items, scores):
-            #inter[iid, uid] = rate
+        #    inter[iid, uid] = rate
     else:
         pass
 
@@ -50,15 +50,15 @@ def load_data(data, movie_num, feed_back="explicit"):
 
 
 def split_and_load_data(device, split_mode="seq-aware", feed_back="explicit", test_ratio=0.1, batch_size=256,
-                        encoded=False):
+                        encoded=False, ctr=False):
     data = read_data_ml100k()
     train_d, test_d = train_test_split(data, split_mode=split_mode, test_ratio=test_ratio)
 
     train_user, train_movies, train_scores, _ = load_data(train_d, 1682, feed_back)
     test_user, test_movies, test_scores, _ = load_data(test_d, 1682, feed_back)
 
-    train_set = mld.MovieLensDataset(train_user, train_movies, train_scores, device=device, ohencoded=encoded)
-    test_set = mld.MovieLensDataset(test_user, test_movies, test_scores, device=device, ohencoded=encoded)
+    train_set = MovieLensDataset(train_user, train_movies, train_scores, device=device, ohencoded=encoded, ctr=ctr)
+    test_set = MovieLensDataset(test_user, test_movies, test_scores, device=device, ohencoded=encoded, ctr=ctr)
 
     train_dl = DataLoader(train_set, batch_size=batch_size, shuffle=False, drop_last=False)
 
