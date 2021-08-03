@@ -40,8 +40,9 @@ def load_data(data, movie_num, feed_back="explicit"):
     scores = data["rating"].tolist()
 
     if feed_back == "explicit":
-        for uid, iid, rate in zip(users, items, scores):
-            inter[iid, uid] = rate
+        pass
+        #for uid, iid, rate in zip(users, items, scores):
+            #inter[iid, uid] = rate
     else:
         pass
 
@@ -64,3 +65,4 @@ def split_and_load_data(device, split_mode="seq-aware", feed_back="explicit", te
     test_dl = DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=False)
 
     return 943, 1682, train_dl, test_dl
+
