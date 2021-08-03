@@ -8,7 +8,7 @@ class MovieLensDataset(Dataset):
         self.datas[:, 0] = torch.tensor(user_ids)
         self.datas[:, 1] = torch.tensor(item_ids)
         self.datas[:, 2] = torch.tensor(scores)
-        if ctr:
+        if ctr == True:
           for i in range(self.datas.shape[0]):
             self.datas[i, 2] = 1 if self.datas[i, 2] > 3 else 0
         self.length = self.datas.shape[0]
@@ -29,5 +29,4 @@ class MovieLensDataset(Dataset):
         return self.length
 
     def __getitem__(self, idx):
-
-        return self.datas[idx]turn self.datas[idx]
+        return self.datas[idx]
