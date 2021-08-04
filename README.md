@@ -9,10 +9,11 @@ The models that are investigated and implemented are Matrix Factorization Model,
   In all the models that are listed above are worked on the same dataset which is MovieLens100K.
   MovieLens100K dataset contins 943 unique Users and 1682 unique Movies with all the user-movie combination has a rating value. There are no NaN values.
   
-  --Pytorch MovieLens Dataset is implemented. The dataset constructor has the option to convert the id values into OneHotEncoding and Rating values into Click Through    Problem where above 3 rating is 1 (clicked), 0 is not clicked.
+  --Pytorch MovieLens Dataset is implemented. The dataset constructor has the option to convert the id values into OneHotEncoding and Rating values into Click Through    Rate Problem (CTR Prediction) where above 3 rating is 1 (clicked), 0 is not clicked.
   
   Besides the Dataset, there are 4 functions where makes the train-test split, creates the dataset and dataloader objects.
-
+  
+  CTR prediction is worked with Factorization Machine and DeepFM models. (d2l book does CTR prediction)
 
 1- Matrix Factorization Model
 
@@ -39,6 +40,24 @@ The models that are investigated and implemented are Matrix Factorization Model,
   
   Graphical Representation:
   ![resim](https://user-images.githubusercontent.com/43790905/128179896-5ee07ce4-97d9-4a23-80a0-f0deb2f21ab1.png)
+   
+  Training Config: Adam Opt, lr:0.002 factorization 10
+  ![FMson](https://user-images.githubusercontent.com/43790905/128200894-d2167228-595f-4599-8a99-1db83edf92d0.jpg)
+  ![FMsonplot](https://user-images.githubusercontent.com/43790905/128200903-69fb5812-0de9-477e-8679-588bda0f1fe7.jpg)
+
+
+3- DeepFactorization Machine
+
+  DeepFactorization Machine is a combination of Deep Neural Network and Factorization Machine.
+  One of the problem of the FM is that it only works with the binary interactions with DNN multiple interaction can be modelled
+  
+  Graphical Model:
+  ![resim](https://user-images.githubusercontent.com/43790905/128201308-21b0d173-be02-4c32-bbfb-723e0f377cdf.png)
+
+  Training Config: Adam Opt, lr:0.002, factorization:10, DNN_dims:[50,40,25,10] drop_rate:0.1
+  
+  ![dfm1](https://user-images.githubusercontent.com/43790905/128201622-a840824c-791d-4eb2-bbe3-ac80e953dbb7.jpg)
+  ![dfm11](https://user-images.githubusercontent.com/43790905/128201635-2b2644c6-4b82-4af8-a725-86b033395df1.jpg)
 
 
 
