@@ -52,8 +52,7 @@ The models that are investigated and implemented are Matrix Factorization Model,
   One of the problem of the FM is that it only works with the binary interactions with DNN multiple interaction can be modelled
   
   Graphical Model:
-  ![resim](https://user-images.githubusercontent.com/43790905/128201308-21b0d173-be02-4c32-bbfb-723e0f377cdf.png)
-
+  ![resim](https://user-images.githubusercontent.com/43790905/128202218-422c76a7-2b62-4ff1-8713-9a3bd9d8b9af.png)
   Training Config: Adam Opt, lr:0.002, factorization:10, DNN_dims:[50,40,25,10] drop_rate:0.1
   
   ![dfm1](https://user-images.githubusercontent.com/43790905/128201622-a840824c-791d-4eb2-bbe3-ac80e953dbb7.jpg)
