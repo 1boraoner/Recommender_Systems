@@ -4,7 +4,7 @@ All the models below are based on the Dive Into the Deep Learning(d2l) book's Re
 One of the main goal of this Repository is to convert the code that is written in gluon into Pytorch. Other than that The models implemented are the state of the art recommendation system models.
 The models that are investigated and implemented are Matrix Factorization Model, Factorization Machines, Deep Factorization Machines
 
-0 - Loading the Data and Data preprocessing
+**0 - Loading the Data and Data preprocessing**
 
   In all the models that are listed above are worked on the same dataset which is MovieLens100K.
   MovieLens100K dataset contins 943 unique Users and 1682 unique Movies with all the user-movie combination has a rating value. There are no NaN values.
@@ -15,7 +15,7 @@ The models that are investigated and implemented are Matrix Factorization Model,
   
   CTR prediction is worked with Factorization Machine and DeepFM models. (d2l book does CTR prediction)
 
-1- Matrix Factorization Model
+**1- Matrix Factorization Model**
 
   With Matrix Factorization model a rating problem is investigated. The main idea is that factoring the user-item ids into 2 seperate matrices where learned hidden features between the ids. The possible ratings can be guessed with the output and if the rating is above 3 the movie of a user can be recommended.
   Better to show with Image:
@@ -29,7 +29,7 @@ The models that are investigated and implemented are Matrix Factorization Model,
   Finally, with this trained model any user and movie tuple's possible score can be found.
   
   
-2- Factorization Machine
+**2- Factorization Machine**
 
   Factorization Machines are models where used on top of the linear regression model and investigates the binary relation between the feature vectors.
   In the model, a latent matrix is constructed from a Factorization Layer. Then the vectors are dot prodcuted in two ways and being squared.
@@ -46,7 +46,7 @@ The models that are investigated and implemented are Matrix Factorization Model,
   ![FMsonplot](https://user-images.githubusercontent.com/43790905/128200903-69fb5812-0de9-477e-8679-588bda0f1fe7.jpg)
 
 
-3- DeepFactorization Machine
+**3- DeepFactorization Machine**
 
   DeepFactorization Machine is a combination of Deep Neural Network and Factorization Machine.
   One of the problem of the FM is that it only works with the binary interactions with DNN multiple interaction can be modelled
